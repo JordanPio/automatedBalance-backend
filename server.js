@@ -274,7 +274,6 @@ app.get("/balance", async (req, res) => {
   }
 });
 
-
 app.get("/edit", async (req, res) => {
   try {
     let date = req.query.date;
@@ -373,7 +372,8 @@ app.post("/insertBalance", async (req, res) => {
       let myInsert = "INSERT INTO balanco (TIPO, CONTA, TOTAL, DATA) VALUES($1, $2, $3, $4) ON CONFLICT ON CONSTRAINT unique_idx_balanco DO NOTHING RETURNING * ";
       // console.log(dataset.data.tipo, dataset.data.conta, dataset.data.total, dataset.data.date)
       const insertInto = await pool.query(myInsert, [dataset.data.tipo, dataset.data.conta, dataset.data.total, dataset.data.date]);
-      await res.json("Success, a total of ", insertInto.rows, " rows has been added to the Balanco Database");
+      await res.json("Success, a total of ", insertInto.rowCount, " rows has been added to the Balanco Database");
+      // await console.log(insertInto.rowCount, "what came back FIRST!!!!!!");
     } else {
       // console.log("Composto", dataset.dataBal);
       const cs = new pgp.helpers.ColumnSet(["tipo", "conta", "total", "data"], { table: "balanco" });
@@ -381,6 +381,7 @@ app.post("/insertBalance", async (req, res) => {
       // console.log(insert);
       const updateTable = await pool2.result(insert);
       await res.json("Success, a total of ", updateTable.rowCount, " rows has been addded to the Balanco Database");
+      // await console.log(updateTable.rowCount, "what came back!!!!!!");
     }
   } catch (error) {
     console.error(error.message);
