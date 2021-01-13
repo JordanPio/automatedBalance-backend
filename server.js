@@ -279,7 +279,7 @@ app.get("/edit", async (req, res) => {
     let date = req.query.date;
     // console.log(date)
 
-    const ativos = await pool.query(`SELECT * FROM balanco where data='${date}' order by id`);
+    const ativos = await pool.query(`SELECT * FROM balanco where data='${date}' order by conta`);
     // const ativos = await pool.query(`select conta, tipo, json_object_agg(data, (total, id) ORDER BY data) FROM ( SELECT conta, tipo, data, total, id FROM balanco where data='${date}' GROUP BY conta, tipo, data, total, id) s GROUP BY conta, tipo ORDER BY conta`);
 
     // old query

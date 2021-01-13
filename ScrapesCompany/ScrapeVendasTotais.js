@@ -62,7 +62,7 @@ exports.scrape = async (browser, startDate, endDate, errCounter) => {
 
     await page.$eval("body > div.new-content.ng-scope > div > section > div > div > ng-include > div.top-action-bar.report-bar.ng-scope > div > div.right > div > div.filters-container.flex > div > div.confirm-filter > button", elem => elem.click());
 
-    await page.waitForSelector("td", { timeout: 60000 });
+    await page.waitForSelector("td", { timeout: 120000 });
 
     // ACTIVATING AUTOSCROLL
     await autoScroll(page);
@@ -86,6 +86,7 @@ exports.scrape = async (browser, startDate, endDate, errCounter) => {
     const rowsData = manipulate.formatVendasTotais(linhas);
 
     validation = 0;
+    // console.log(rowsData);
     for (let i = 0; i < rowsData.length; i++) {
       if (!rowsData[i][0].match(/exibindo/i)) {
         continue;

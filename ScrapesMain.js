@@ -13,9 +13,9 @@ const vendasTotais = require("./ScrapesCompany/ScrapeVendasTotais");
 // const dtConvert = require("date-fns");
 // const { formatVendasPeriodo } = require("./manipulate");
 
-// Balance analysis Dates
-// const initialDate = "29/07/2020";
-// const finalDate = "08/12/2020";
+// // // Balance analysis Dates, just use for manual scrapping
+// const initialDate = "10/01/2019";
+// const finalDate = "16/09/2019";
 // let attemptTimes = 2;
 
 // ContasReceber.scrape(attemptTimes);
@@ -37,7 +37,7 @@ exports.scrapeData = async (errCounter, startDate, endDate) => {
 
   //start from here
   const queue = new PQueue({ concurrency: 6 });
-  const browser = puppeteer.launch({ headless: true });
+  const browser = puppeteer.launch({ headless: false });
   let instance = await browser;
   const page = await instance.newPage();
 
@@ -47,7 +47,7 @@ exports.scrapeData = async (errCounter, startDate, endDate) => {
     const websiteUrl = "https://kanguruinfo.marketup.com/index.html#/login";
 
     // prevent detection as robot
-    console.log('Starting Scrapping....')
+    console.log("Starting Scrapping....");
     page.setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.0 Safari/537.36");
 
     await page.goto(websiteUrl, { waitUntil: "networkidle0" });
@@ -69,6 +69,8 @@ exports.scrapeData = async (errCounter, startDate, endDate) => {
     });
     // working well
     await Promise.all([queue.add(() => estoque.scrape(browser, errCounter)), queue.add(() => ContasReceber.scrape(browser, errCounter)), queue.add(() => ContasAPagar.scrape(browser, errCounter)), queue.add(() => ContasPagas.scrape(browser, startDate, endDate, errCounter)), queue.add(() => vendasPeriodo.scrape(browser, startDate, endDate, errCounter)), queue.add(() => vendasTotais.scrape(browser, startDate, endDate, errCounter))]);
+    // await Promise.all([queue.add(() => vendasPeriodo.scrape(browser, startDate, endDate, errCounter))]); // somente vendas Periodo
+    // await Promise.all([queue.add(() => vendasTotais.scrape(browser, startDate, endDate, errCounter))]); // somente vendas totais
 
     // // Old Style working one by one (remember to change the code on each script to accept page instead of browser)
     // // (you need to pass browser and create an instance on each working function when running multiple pages)
