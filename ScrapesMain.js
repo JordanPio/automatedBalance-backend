@@ -37,7 +37,7 @@ exports.scrapeData = async (errCounter, startDate, endDate) => {
 
   //start from here
   const queue = new PQueue({ concurrency: 6 });
-  const browser = puppeteer.launch({ headless: false });
+  const browser = puppeteer.launch({ headless: true });
   let instance = await browser;
   const page = await instance.newPage();
 

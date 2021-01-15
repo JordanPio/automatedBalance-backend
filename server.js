@@ -365,6 +365,7 @@ app.post("/insertBalance", async (req, res) => {
   insertionsCounted = 0;
   repeatedInsertionsRejected = 0;
   let dataset = req.body;
+  // console.log(dataset, "this is your dataset");
 
   try {
     if (dataset.data) {
