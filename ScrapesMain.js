@@ -3,17 +3,14 @@ const dotenv = require("dotenv");
 const { default: PQueue } = require("p-queue");
 dotenv.config();
 
-// const scrape = import("./ScrapesCompany/ScrapeContasAPagar")
 const ContasReceber = require("./ScrapesCompany/ScrapeContasReceber");
 const ContasAPagar = require("./ScrapesCompany/ScrapeContasAPagar");
 const ContasPagas = require("./ScrapesCompany/ScrapeContasPagas");
 const estoque = require("./ScrapesCompany/scrapeEstoque");
 const vendasPeriodo = require("./ScrapesCompany/ScrapeVendasPeriodo");
 const vendasTotais = require("./ScrapesCompany/ScrapeVendasTotais");
-// const dtConvert = require("date-fns");
-// const { formatVendasPeriodo } = require("./manipulate");
 
-// // // Balance analysis Dates, just use for manual scrapping
+// // // Balance analysis Dates, just use for manual scrapping as test
 // const initialDate = "10/01/2019";
 // const finalDate = "16/09/2019";
 // let attemptTimes = 2;
@@ -30,11 +27,6 @@ const vendasTotais = require("./ScrapesCompany/ScrapeVendasTotais");
 // const max_tries = 3
 
 exports.scrapeData = async (errCounter, startDate, endDate) => {
-  // old test - remove later
-  // await vendasPeriodo.scrape(startDate, endDate, attemptTimes);
-  // await vendasTotais.scrape(startDate, endDate, attemptTimes);
-  // await console.log("this run after after code completed or failed ?");
-
   //start from here
   const queue = new PQueue({ concurrency: 6 });
   const browser = puppeteer.launch({ headless: true });
@@ -46,18 +38,15 @@ exports.scrapeData = async (errCounter, startDate, endDate) => {
     const senha = process.env.SENHA;
     const websiteUrl = "https://kanguruinfo.marketup.com/index.html#/login";
 
-    // prevent detection as robot
     console.log("Starting Scrapping....");
     page.setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.0 Safari/537.36");
 
     await page.goto(websiteUrl, { waitUntil: "networkidle0" });
 
-    //set the browser to be in desktop size and do not hide the login menu
     await page.setViewport({ width: 2400, height: 1171 });
 
     await page.waitForSelector("#login§ds_login");
 
-    //Type login details using fields IDS
     await page.type("#login§ds_login", usuario, { delay: 100 });
     await page.type("#login§ds_password", senha, { delay: 100 });
 
@@ -67,7 +56,6 @@ exports.scrapeData = async (errCounter, startDate, endDate) => {
       console.log(dialog.message());
       await dialog.dismiss();
     });
-    // working well
     await Promise.all([queue.add(() => estoque.scrape(browser, errCounter)), queue.add(() => ContasReceber.scrape(browser, errCounter)), queue.add(() => ContasAPagar.scrape(browser, errCounter)), queue.add(() => ContasPagas.scrape(browser, startDate, endDate, errCounter)), queue.add(() => vendasPeriodo.scrape(browser, startDate, endDate, errCounter)), queue.add(() => vendasTotais.scrape(browser, startDate, endDate, errCounter))]);
     // await Promise.all([queue.add(() => vendasPeriodo.scrape(browser, startDate, endDate, errCounter))]); // somente vendas Periodo
     // await Promise.all([queue.add(() => vendasTotais.scrape(browser, startDate, endDate, errCounter))]); // somente vendas totais
@@ -92,7 +80,7 @@ exports.scrapeData = async (errCounter, startDate, endDate) => {
     }
   }
 
-  await instance.close(); // close instance (not browser anymore)
+  await instance.close(); // close instance instead of browser
   await console.log("ALL SCRAPES DONE");
 };
 
