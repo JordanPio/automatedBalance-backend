@@ -77,9 +77,9 @@ exports.scrape = async (browser, startDate, endDate, errCounter) => {
     // let dataTable = table(data1);
     // console.log(dataTable);
 
-    writeFileSync(__dirname + "/../data/pagas.json", JSON.stringify(data1));
-    writeFileSync(__dirname + "/../data/colunas.json", JSON.stringify(columns));
-    writeFileSync(__dirname + "/../data/linhas.json", JSON.stringify(linhas));
+    // writeFileSync(__dirname + "/../data/pagas.json", JSON.stringify(data1));
+    // writeFileSync(__dirname + "/../data/colunas.json", JSON.stringify(columns));
+    // writeFileSync(__dirname + "/../data/linhas.json", JSON.stringify(linhas));
     // const rowsData = JSON.stringify(linhas);
     // Check if scrape succeded by using EXIBINDO - FIX THIS PART
 

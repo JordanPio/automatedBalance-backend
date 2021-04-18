@@ -90,9 +90,9 @@ exports.scrape = async (browser, errCounter) => {
     // let dataTable = table(data1);
     // console.log(dataTable);
 
-    writeFileSync(__dirname + "/../data/aPagar.json", JSON.stringify(data1));
-    writeFileSync(__dirname + "/../data/colunasAPagar.json", JSON.stringify(columns));
-    writeFileSync(__dirname + "/../data/linhasAPagar.json", JSON.stringify(linhas));
+    // writeFileSync(__dirname + "/../data/aPagar.json", JSON.stringify(data1));
+    // writeFileSync(__dirname + "/../data/colunasAPagar.json", JSON.stringify(columns));
+    // writeFileSync(__dirname + "/../data/linhasAPagar.json", JSON.stringify(linhas));
     // const rowsData = JSON.stringify(linhas);
     // Check if scrape succeded by using EXIBINDO - FIX THIS PART
 

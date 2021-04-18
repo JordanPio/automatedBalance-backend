@@ -11,8 +11,8 @@ const vendasPeriodo = require("./ScrapesCompany/ScrapeVendasPeriodo");
 const vendasTotais = require("./ScrapesCompany/ScrapeVendasTotais");
 
 // // // Balance analysis Dates, just use for manual scrapping as test
-// const initialDate = "10/01/2019";
-// const finalDate = "16/09/2019";
+// const initialDate = "18/03/2021";
+// const finalDate = "13/04/2021";
 // let attemptTimes = 2;
 
 // ContasReceber.scrape(attemptTimes);
@@ -56,6 +56,7 @@ exports.scrapeData = async (errCounter, startDate, endDate) => {
       console.log(dialog.message());
       await dialog.dismiss();
     });
+    //correct is the first one
     await Promise.all([queue.add(() => estoque.scrape(browser, errCounter)), queue.add(() => ContasReceber.scrape(browser, errCounter)), queue.add(() => ContasAPagar.scrape(browser, errCounter)), queue.add(() => ContasPagas.scrape(browser, startDate, endDate, errCounter)), queue.add(() => vendasPeriodo.scrape(browser, startDate, endDate, errCounter)), queue.add(() => vendasTotais.scrape(browser, startDate, endDate, errCounter))]);
     // await Promise.all([queue.add(() => vendasPeriodo.scrape(browser, startDate, endDate, errCounter))]); // somente vendas Periodo
     // await Promise.all([queue.add(() => vendasTotais.scrape(browser, startDate, endDate, errCounter))]); // somente vendas totais

@@ -78,9 +78,9 @@ exports.scrape = async (browser, errCounter) => {
     // console.table(data1); // check RESULTS
     // console.log(linhas); // check RESULTs
 
-    writeFileSync(__dirname + "/../data/aReceber.json", JSON.stringify(data1));
-    writeFileSync(__dirname + "/../data/colunasReceber.json", JSON.stringify(columns));
-    writeFileSync(__dirname + "/../data/linhasReceber.json", JSON.stringify(linhas));
+    // writeFileSync(__dirname + "/../data/aReceber.json", JSON.stringify(data1));
+    // writeFileSync(__dirname + "/../data/colunasReceber.json", JSON.stringify(columns));
+    // writeFileSync(__dirname + "/../data/linhasReceber.json", JSON.stringify(linhas));
 
     const rowsData = manipulate.formatReceber(linhas);
 

@@ -1,6 +1,6 @@
-let col = require("./data/colunas.json");
-let linhas = require("./data/linhas.json");
-let data = require("./data/pagas.json");
+// let col = require("./data/colunas.json");
+// let linhas = require("./data/linhas.json");
+// let data = require("./data/pagas.json");
 const table = require("table").table;
 
 // console.log(col);
@@ -311,7 +311,7 @@ exports.insertVendasPeriodo = async dataSet => {
   insertionsCounted = 0;
   repeatedInsertionsRejected = 0;
   let myInsert = "INSERT INTO vendasPeriodo (CANAL, NUMEROPED, CLIENTE, DATA, QTDEProdutos, FRETE, TOTALBRUTO, DESCONTO, TOTALLIQUIDO, VENDEDOR) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) ON CONFLICT ON CONSTRAINT unique_idx_vendasPeriodo DO NOTHING RETURNING * ";
-
+  // console.log(dataSet)
   try {
     for (let i = 0; i < dataSet.length; i++) {
       if (dataSet[i][0].match(/exibindo/i)) {
