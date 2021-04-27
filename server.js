@@ -58,6 +58,7 @@ app.get("/pagarTabela", async (req, res) => {
   }
 });
 
+// Query that filteres everything out and leave only Despesas
 app.get("/pagasTabela", async (req, res) => {
   try {
     let prevBalanceDate = req.query.prevBalanceDate;
@@ -66,7 +67,67 @@ app.get("/pagasTabela", async (req, res) => {
       prevBalanceDate = currentBalanceDate;
       currentBalanceDate = req.query.newBalanceDate;
     }
-    const receberTabela = await pool.query(`select conta, sum(pago) as TOTAL, (sum(pago)/ sum(sum(pago)) over ()) as percenttotal from pagas where datapagamento >='${prevBalanceDate}' and datapagamento <='${currentBalanceDate}' and conta not like '%Retirada%' and conta not like '%Mercadoria%' and conta not like '%Impostos%' and conta not like '%Frete%' and conta not like '%Tarifas Mercado Livre%' and conta not like '%Difere%' and descricao not like '%TARIFAS B2W%' and descricao not like '%COMISSAO B2W%' and descricao not like '%COMISSAO MAGAZINE LUIZA%' group by conta order by total desc`);
+    const receberTabela = await pool.query(`select 
+    conta, descricao, sum(pago) as TOTAL, (sum(pago)/ sum(sum(pago)) over ()) as percenttotal,
+    
+    CASE
+    WHEN "conta" ilike '%comiss%' and descricao ilike '%b2w%' THEN 'Taxas B2W'
+    WHEN "conta" ilike '%comiss%' and descricao ilike '%magazine%' THEN 'Taxas Magazine'
+    WHEN ("conta" ilike '%comiss%' or "conta" ilike '%Tarifas Banc%') and descricao ilike '%Mercado%' THEN 'Taxas Mercado Livre'
+    WHEN "conta" ilike '%frete%' and descricao ilike '%b2w%' THEN 'Frete B2W'
+    WHEN "conta" ilike '%frete%' and descricao ilike '%magazine%' THEN 'Frete Magazine'
+    WHEN "conta" ilike '%frete%' and descricao ilike '%Mercado%' THEN 'Frete Mercado Livre'
+
+
+
+    ELSE '-'
+    END AS "custom"  
+
+    from pagas 
+    where datapagamento >='${prevBalanceDate}' and datapagamento <='${currentBalanceDate}' 
+    and conta not ilike '%Retirada%' and conta not ilike '%Mercadoria%' and conta not ilike '%Imposto%' and conta not ilike '%Devolu%' 
+    and conta not ilike '%Mercado Livre%' and conta not ilike '%Diferen%'
+
+    group by conta, descricao order by total desc`);
+    res.json(receberTabela.rows);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+
+app.get("/pagasTest", async (req, res) => {
+  try {
+    let prevBalanceDate = req.query.prevBalanceDate;
+    let currentBalanceDate = req.query.currentBalanceDate;
+    if (req.query.newBalanceDate > currentBalanceDate) {
+      prevBalanceDate = currentBalanceDate;
+      currentBalanceDate = req.query.newBalanceDate;
+    }
+    const receberTabela = await pool.query(`select 
+    conta, descricao, sum(pago) as TOTAL, (sum(pago)/ sum(sum(pago)) over ()) as percenttotal,
+    
+    CASE
+    WHEN "conta" ilike '%comiss%' and descricao ilike '%b2w%' THEN 'Taxas B2W'
+    WHEN "conta" ilike '%devolu%' and descricao ilike '%b2w%' THEN 'Devolucao B2W'
+    WHEN "conta" ilike '%dif%' and descricao ilike '%b2w%' THEN 'Devolucao B2W'
+    WHEN "conta" ilike '%frete%' and descricao ilike '%b2w%' THEN 'Frete B2W'
+    
+    WHEN "conta" ilike '%devolu%' and descricao ilike '%magazine%' THEN 'Devolucao Magazine'
+    WHEN "conta" ilike '%dif%' and descricao ilike '%magazine%' THEN 'Devolucao Magazine'
+    WHEN "conta" ilike '%comiss%' and descricao ilike '%magazine%' THEN 'Taxas Magazine'
+    WHEN "conta" ilike '%frete%' and descricao ilike '%magazine%' THEN 'Frete Magazine'
+    
+    WHEN "conta" ilike '%devolu%' and descricao ilike '%Mercado%' THEN 'Devolucao Mercado Livre'
+    WHEN "conta" ilike '%dif%' and descricao ilike '%Mercado%' THEN 'Devolucao Mercado Livre'
+    WHEN ("conta" ilike '%comiss%' or "conta" ilike '%Tarifas Banc%') and descricao ilike '%Mercado%' THEN 'Taxas Mercado Livre'
+    WHEN "conta" ilike '%frete%' and descricao ilike '%Mercado%' THEN 'Frete Mercado Livre'
+    ELSE '-'
+    END AS "custom" 
+    
+    from pagas 
+    where datapagamento >='${prevBalanceDate}' and datapagamento <='${currentBalanceDate}' 
+    and conta not ilike '%Retirada%' and conta not ilike '%Mercadoria%' 
+    group by conta, descricao order by total desc`);
     res.json(receberTabela.rows);
   } catch (error) {
     console.error(error.message);
@@ -115,7 +176,11 @@ app.get("/devolucoes", async (req, res) => {
       prevBalanceDate = currentBalanceDate;
       currentBalanceDate = req.query.newBalanceDate;
     }
-    const receberTabela = await pool.query(`select descricao, sum(pago) as total from pagas where datapagamento >='${prevBalanceDate}' and datapagamento <='${currentBalanceDate}' and conta like '%Dif%' group by descricao order by total desc;`);
+    const receberTabela = await pool.query(`select descricao, sum(pago) as total from pagas 
+    where datapagamento >='${prevBalanceDate}' and datapagamento <='${currentBalanceDate}' 
+    and (conta ilike '%Dif%' or conta ilike '%Devolu%')
+    group by descricao 
+    order by total desc`);
     res.json(receberTabela.rows);
   } catch (error) {
     console.error(error.message);
