@@ -372,4 +372,71 @@ Balance.prototype.queryBillsByDescription = function () {
   });
 };
 
+Balance.prototype.edit = function () {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const editItem = await pool.query(
+        `SELECT * FROM balanco where data='${this.data}' order by conta`
+      );
+      resolve(editItem.rows);
+    } catch {
+      reject();
+    }
+  });
+  w;
+};
+
+Balance.prototype.delete = function () {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const deleteItem = await pool.query(
+        `DELETE FROM balanco where data='${this.data}'`
+      );
+      resolve("the item was succesfuly deleted");
+    } catch {
+      reject("error deleting item");
+    }
+  });
+};
+
+Balance.prototype.scrapeAll = function () {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const attemptTimes = 2;
+      await scraper.scrapeData(
+        attemptTimes,
+        this.prevBalanceDate,
+        this.currentBalanceDate
+      );
+      resolve("Scraper finished succesfully");
+    } catch {
+      reject("There was an issue scraping the data, please try again");
+    }
+  });
+};
+
+Balance.prototype.update = function () {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let dataset = [];
+      await Object.entries(this.data).forEach(([key, value]) => {
+        let items = {};
+        items["id"] = parseInt(key, 10);
+        items["total"] = parseFloat(value);
+        dataset.push(items);
+      });
+      const cs = new pgp.helpers.ColumnSet(["?id", "total"], {
+        table: "balanco",
+      });
+
+      let update = pgp.helpers.update(dataset, cs) + " WHERE v.id = t.id";
+      const updateTable = await pool2.result(update);
+
+      resolve("Items were updated succesfully", updateTable.rowCount);
+    } catch {
+      reject("error updating items");
+    }
+  });
+};
+
 module.exports = Balance;

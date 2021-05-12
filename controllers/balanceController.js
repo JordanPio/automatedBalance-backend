@@ -61,7 +61,7 @@ exports.apiGetCashflowPayable = function (req, res) {
   );
 
   balance
-    .queryCashflowReceivable()
+    .queryCashflowPayable()
     .then((results) => {
       res.json(results);
     })
@@ -279,6 +279,58 @@ exports.apiGetBillsByDescription = function (req, res) {
   );
   balance
     .queryBillsByDescription()
+    .then((results) => {
+      res.json(results);
+    })
+    .catch((errors) => {
+      res.json(errors);
+    });
+};
+
+exports.apiEdit = function (req, res) {
+  let balance = new Balance(req.query.date);
+  balance
+    .edit()
+    .then((results) => {
+      res.json(results);
+    })
+    .catch((errors) => {
+      res.json(errors);
+    });
+};
+
+exports.apiDelete = function (req, res) {
+  let balance = new Balance(req.body.date);
+  balance
+    .delete()
+    .then((results) => {
+      res.json(results);
+    })
+    .catch((errors) => {
+      res.json(errors);
+    });
+};
+
+exports.apiScrapeData = function (req, res) {
+  let balance = new Balance(
+    req.body,
+    req.body.lastDateScrape,
+    req.body.currentDateScrape
+  );
+  balance
+    .scrapeAll()
+    .then((results) => {
+      res.json(results);
+    })
+    .catch((errors) => {
+      res.json(errors);
+    });
+};
+
+exports.apiUpdateBalance = function (req, res) {
+  let balance = new Balance(req.body.data);
+  balance
+    .update()
     .then((results) => {
       res.json(results);
     })

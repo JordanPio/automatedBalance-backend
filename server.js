@@ -352,6 +352,7 @@ app.get("/totalEstoque", balanceController.apiGetStock);
 //   }
 // });
 
+app.get("/balance", balanceController.apiGetBalanceTable);
 // app.get("/balance", async (req, res) => {
 //   try {
 //     const ativos = await pool.query(
@@ -364,8 +365,7 @@ app.get("/totalEstoque", balanceController.apiGetStock);
 //   }
 // });
 
-app.get("/balance", balanceController.apiGetBalanceTable);
-
+app.get("/edit", balanceController.apiEdit);
 // app.get("/edit", async (req, res) => {
 //   try {
 //     let date = req.query.date;
@@ -380,6 +380,7 @@ app.get("/balance", balanceController.apiGetBalanceTable);
 //   }
 // });
 
+app.delete("/delBalance", balanceController.apiDelete);
 // app.delete("/delBalance", async (req, res) => {
 //   try {
 //     let date = req.body.date;
@@ -393,6 +394,7 @@ app.get("/balance", balanceController.apiGetBalanceTable);
 //   }
 // });
 
+app.post("/scrapeAll", balanceController.apiScrapeData);
 // let counter = 0;
 // app.post("/scrapeAll", async (req, res) => {
 //   try {
@@ -409,6 +411,7 @@ app.get("/balance", balanceController.apiGetBalanceTable);
 //   }
 // });
 
+app.post("/updateBalance", balanceController.apiUpdateBalance);
 // app.post("/updateBalance", async (req, res) => {
 //   try {
 //     let dataset = [];
