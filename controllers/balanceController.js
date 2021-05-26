@@ -7,6 +7,7 @@ exports.apiGetContasPagas = function (req, res) {
     req.query.currentBalanceDate,
     req.query.newBalanceDate
   );
+
   balance
     .queryContasPagasPeriod()
     .then((results) => {
@@ -34,7 +35,7 @@ exports.apiGetBalanceTable = function (req, res) {
     });
 };
 
-exports.apiGetCashflowReceivable = function (req, res) {
+exports.apiGetCashflowProjection = async function (req, res) {
   let balance = new Balance(
     req.body,
     req.query.prevBalanceDate,
@@ -42,33 +43,31 @@ exports.apiGetCashflowReceivable = function (req, res) {
     req.query.newBalanceDate
   );
 
-  balance
-    .queryCashflowReceivable()
-    .then((results) => {
-      res.json(results);
-    })
-    .catch((errors) => {
-      res.json(errors);
-    });
+  const cashReceivables = await balance.queryCashflowReceivable();
+
+  const cashPayable = await balance.queryCashflowPayable();
+
+  let calc = await balance.calcCashflow(cashPayable, cashReceivables);
+  res.json(calc);
 };
 
-exports.apiGetCashflowPayable = function (req, res) {
-  let balance = new Balance(
-    req.body,
-    req.query.prevBalanceDate,
-    req.query.currentBalanceDate,
-    req.query.newBalanceDate
-  );
+// exports.apiGetCashflowPayable = function (req, res) {
+//   let balance = new Balance(
+//     req.body,
+//     req.query.prevBalanceDate,
+//     req.query.currentBalanceDate,
+//     req.query.newBalanceDate
+//   );
 
-  balance
-    .queryCashflowPayable()
-    .then((results) => {
-      res.json(results);
-    })
-    .catch((errors) => {
-      res.json(errors);
-    });
-};
+//   balance
+//     .queryCashflowPayable()
+//     .then((results) => {
+//       res.json(results);
+//     })
+//     .catch((errors) => {
+//       res.json(errors);
+//     });
+// };
 
 exports.apiGetOnlineSales = function (req, res) {
   let balance = new Balance(
@@ -185,21 +184,19 @@ exports.apiInsert = function (req, res) {
     });
 };
 
-exports.apiGetAccReceivable = function (req, res) {
+exports.apiGetAccReceivable = async function (req, res) {
   let balance = new Balance(
     req.body,
     req.query.prevBalanceDate,
     req.query.currentBalanceDate,
     req.query.newBalanceDate
   );
-  balance
-    .queryAccReceivable()
-    .then((results) => {
-      res.json(results);
-    })
-    .catch((errors) => {
-      res.json(errors);
-    });
+  const totalAccReceivable = await balance.queryAccReceivable();
+  const totalAccReceivableDue = await balance.queryAccReceivableDue();
+
+  const accReceivableDetails = { totalAccReceivable, totalAccReceivableDue };
+
+  res.json(accReceivableDetails);
 };
 
 exports.apiGetAccReceivableDue = function (req, res) {
@@ -253,21 +250,18 @@ exports.apiGetTotalAccPayable = function (req, res) {
     });
 };
 
-exports.apiGetBillsByAccType = function (req, res) {
+exports.apiGetBillsDetails = async function (req, res) {
   let balance = new Balance(
     req.body,
     req.query.prevBalanceDate,
     req.query.currentBalanceDate,
     req.query.newBalanceDate
   );
-  balance
-    .queryBillsByAccType()
-    .then((results) => {
-      res.json(results);
-    })
-    .catch((errors) => {
-      res.json(errors);
-    });
+
+  const billsByAccount = await balance.queryBillsByAccType();
+  const billsByDescription = await balance.queryBillsByDescription();
+  const response = { billsByAccount, billsByDescription };
+  res.json(response);
 };
 
 exports.apiGetBillsByDescription = function (req, res) {

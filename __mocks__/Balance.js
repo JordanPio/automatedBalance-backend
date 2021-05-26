@@ -326,75 +326,28 @@ Balance.prototype.queryCashflowReceivable = function () {
 Balance.prototype.queryCashflowPayable = function () {
   return new Promise(async (resolve, reject) => {
     try {
-      const cashflowPayable = await pool.query(
-        `select date_trunc('week', vencimento::date) as weekly, sum(saldo) as pagar 
-        from apagar 
-        where data='${this.currentBalanceDate}' 
-        group by weekly order by weekly`
-      );
-      resolve(cashflowPayable.rows);
+      const cashflowPayable = [
+        { pagar: 29557.01, weekly: "2021-04-18T14:00:00.000Z" },
+      ];
+      resolve(cashflowPayable);
     } catch {
       reject();
     }
   });
 };
 
-Balance.prototype.calcCashflow = function (payableArr, receivArr) {
-  return new Promise((resolve, reject) => {
-    try {
-      if (payableArr.length === 0 || receivArr.length === 0) return [];
+Balance.prototype.calcCashflow = function (payableObj, receivableObj) {
+  if (
+    !payableObj ||
+    !receivableObj ||
+    Object.keys(payableObj).length === 0 ||
+    Object.keys(receivableObj).length === 0
+  )
+    return {};
 
-      let a;
+  // for (let index = 0; index < re.length; index++) {
 
-      if (payableArr.length > receivArr.length) {
-        a = payableArr.length;
-      } else {
-        a = receivArr.length;
-      }
-
-      let r = 0;
-      let p = 0;
-      let newObj = [];
-
-      while (a > 0) {
-        if (!receivArr[r] && !payableArr[p]) {
-          break;
-        } else if (!payableArr[p] && receivArr[r]) {
-          newObj.push(receivArr[r]);
-          r++;
-        } else if (payableArr[p] && !receivArr[r]) {
-          newObj.push(payableArr[p]);
-          p++;
-        } else if (
-          payableArr[p].weekly.getTime() === receivArr[r].weekly.getTime()
-        ) {
-          newObj.push(receivArr[r]);
-          newObj[r]["pagar"] = payableArr[p].pagar;
-          r++;
-          p++;
-        } else if (
-          payableArr[p].weekly.getTime() > receivArr[r].weekly.getTime()
-        ) {
-          newObj.push(receivArr[r]);
-          r++;
-        } else if (
-          receivArr[r].weekly.getTime() > payableArr[p].weekly.getTime()
-        ) {
-          newObj.push(payableArr[p]);
-
-          p++;
-        } else {
-          newObj.push(receivArr[r]);
-          r++;
-        }
-        a--;
-      }
-
-      resolve(newObj);
-    } catch {
-      reject();
-    }
-  });
+  // }
 };
 
 Balance.prototype.queryVendasOnline = function () {

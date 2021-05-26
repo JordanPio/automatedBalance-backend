@@ -129,3 +129,12 @@ select conta, descricao, sum(pago) as total from pagas
     select sum(pago) as total from pagas 
     where datapagamento >='2021-01-06' and datapagamento <='2021-03-18'
     and (conta ilike '%Dif%' or conta ilike '%Devolu%');
+
+
+        const cashflowReceivable = await pool.query(
+        select date_trunc('week', rec.vencimento::date) as weekly, sum(rec.saldo) as receber, sum(pg.saldo) 
+        FROM receber rec
+        inner join apagar pg
+        on date_trunc('week', rec.vencimento::date) = date_trunc('week', pg.vencimento::date)
+        WHERE rec.descricao not like '%CREDITO%' and rec.data='2021-04-18' 
+        GROUP BY weekly order by weekly
